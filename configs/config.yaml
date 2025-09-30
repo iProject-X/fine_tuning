@@ -1,0 +1,192 @@
+# Uzbek Whisper ASR Configuration
+
+# Model Configuration
+model:
+  name: "uzbek-whisper-multilingual"
+  base_model: "openai/whisper-base"
+  languages: ["uz", "ru", "mixed"]
+  vocab_size: 51865
+
+  # Architecture specific
+  adapter_dim: 256
+  dropout: 0.1
+  attention_dropout: 0.1
+
+  # Quantization settings
+  quantization:
+    enabled: true
+    type: "dynamic"  # static, dynamic
+    target_ops: ["Linear", "Conv1d"]
+
+# Training Configuration
+training:
+  batch_size: 16
+  gradient_accumulation_steps: 4
+  learning_rate: 5e-5
+  weight_decay: 0.01
+  warmup_steps: 1000
+  max_steps: 50000
+
+  # Mixed precision
+  mixed_precision: "fp16"
+  gradient_clip_val: 1.0
+
+  # Curriculum learning
+  curriculum_learning:
+    enabled: true
+    stages:
+      - name: "clean_audio"
+        epochs: 5
+        data_filter: "clean"
+      - name: "noisy_audio"
+        epochs: 3
+        data_filter: "augmented"
+      - name: "code_switch"
+        epochs: 5
+        data_filter: "code_switch"
+
+  # Optimization
+  optimizer: "adamw"
+  scheduler: "cosine"
+
+  # Checkpointing
+  save_every_n_steps: 1000
+  eval_every_n_steps: 500
+  keep_last_n_checkpoints: 5
+
+# Data Configuration
+data:
+  sample_rate: 16000
+  max_audio_length: 30  # seconds
+  min_audio_length: 1   # seconds
+
+  # Text processing
+  normalize_text: true
+  remove_punctuation: false
+  lowercase: true
+
+  # Augmentation
+  augmentation:
+    enabled: true
+    prob: 0.7
+    techniques:
+      - speed_change: {min: 0.9, max: 1.1}
+      - pitch_shift: {min: -2, max: 2}
+      - noise_addition: {snr_range: [10, 40]}
+      - reverb: {room_size: [0.1, 0.9]}
+      - telephone_filter: {prob: 0.1}
+      - codec_simulation: {prob: 0.15}
+
+# Code-switching Configuration
+code_switching:
+  detection_threshold: 0.7
+  segment_min_length: 3  # words
+
+  # Language patterns
+  uzbek_patterns:
+    - '\b(men|sen|u|biz|siz|ular)\b'
+    - '\b(qil|kel|bor|tur|ol)\w*\b'
+    - '\b\w+(lar|ning|ni|da|ga)\b'
+
+  russian_patterns:
+    - '\b(я|ты|он|она|мы|вы|они)\b'
+    - '\b(это|можно|нужно|есть|был)\w*\b'
+    - '\b\w+(ость|ение|ация|ский)\b'
+
+# Serving Configuration
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+
+  # API settings
+  max_audio_size_mb: 50
+  request_timeout: 30
+  enable_streaming: true
+
+  # Caching
+  redis:
+    host: "localhost"
+    port: 6379
+    ttl: 3600  # 1 hour
+    max_connections: 100
+
+  # Batch processing
+  batch_size: 8
+  max_batch_wait_time: 0.1  # seconds
+
+# Monitoring Configuration
+monitoring:
+  metrics_port: 9090
+  log_level: "INFO"
+
+  # Performance thresholds
+  thresholds:
+    max_latency_ms: 100
+    min_throughput_rps: 1000
+    max_error_rate: 0.001
+    target_wer: 0.25
+
+  # Alerting
+  alerts:
+    webhook_url: ""
+    email_notifications: []
+
+# Infrastructure Configuration
+infrastructure:
+  # Kubernetes
+  kubernetes:
+    namespace: "uzbek-whisper"
+    replicas: 3
+    resources:
+      requests:
+        cpu: "2"
+        memory: "4Gi"
+        gpu: "1"
+      limits:
+        cpu: "4"
+        memory: "8Gi"
+        gpu: "1"
+
+  # Storage
+  storage:
+    data_path: "/data"
+    model_path: "/models"
+    cache_path: "/cache"
+    backup_enabled: true
+
+# Evaluation Configuration
+evaluation:
+  test_datasets:
+    - name: "uzbek_clean"
+      path: "data/test/uzbek_clean.json"
+      weight: 0.4
+    - name: "russian_clean"
+      path: "data/test/russian_clean.json"
+      weight: 0.3
+    - name: "code_switch"
+      path: "data/test/code_switch.json"
+      weight: 0.3
+
+  metrics:
+    - "wer"
+    - "cer"
+    - "mer"
+    - "code_switch_accuracy"
+    - "language_detection_f1"
+
+# Telegram Bot Configuration
+telegram_bot:
+  token: ""  # Set from environment variable
+  webhook_url: ""
+
+  # Data collection settings
+  max_audio_duration: 60  # seconds
+  min_audio_duration: 2   # seconds
+  auto_approve_threshold: 0.95
+
+  # Incentives
+  rewards:
+    per_audio: 100  # points
+    per_transcription: 50  # points
+    quality_bonus: 200  # points for high quality

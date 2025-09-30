@@ -1,0 +1,50 @@
+{
+  "model_size": "small",
+  "data_source": "combined",
+  "total_samples": 32,
+  "epochs": 1,
+  "batch_size": 16,
+  "device": "cuda",
+  "samples": [
+    {
+      "audio": "./data/telegram/1642071479_ade000b1-4f35-4d45-9bad-a03ce5dd491f.ogg",
+      "text": "Assalomu Alaykum"
+    },
+    {
+      "audio": "./data/telegram/1642071479_5375b275-fba8-439c-bf61-d2766680cef9.ogg",
+      "text": "bir ikki uch to’rt besh olti yetti sakkiz to’qqiz o’n"
+    },
+    {
+      "audio": "./data/telegram/1642071479_f77d666d-76c1-46ec-9eb9-d58893945357.ogg",
+      "text": "iltimos ovozli xabar qoldiring"
+    },
+    {
+      "audio": "./data/telegram/1642071479_23fc22c1-ba2d-4605-9493-464549c375dd.ogg",
+      "text": "No aniqlikdan aniqlikga olib chiqamiz"
+    },
+    {
+      "audio": "./data/telegram/1642071479_f6cde3f2-ea63-4ba8-a822-2af6f05202b5.ogg",
+      "text": "Hadid Doktor eng zo’r kompaniya"
+    },
+    {
+      "audio": "./data/telegram/1642071479_ed4e9784-1ee2-4ea8-a994-115d4b928aca.ogg",
+      "text": "O’zbekiston Respublikasiga xush kelibsiz!"
+    },
+    {
+      "audio": "./data/telegram/1642071479_4bf64808-bee6-4ccc-86d9-347cfe1eb16f.ogg",
+      "text": "Labarotoriya sharoitida namlik darajasini o’lchash"
+    },
+    {
+      "audio": "./data/telegram/1642071479_48fd1365-440e-4dd3-8fac-a2dce169134a.ogg",
+      "text": "Kadastor xujjatlariga ega do’konlar"
+    },
+    {
+      "audio": "./data/telegram/1642071479_1623aa31-b377-40d3-a920-4761a630be78.ogg",
+      "text": "Zamonaviy bozor va oilaviy ko’ngil ochar majmuasi"
+    },
+    {
+      "audio": "./data/telegram/1642071479_7955e588-b2e9-406b-937c-a68f21c958de.ogg",
+      "text": "Xavfsizlik xizmati 24/7 videokuzatuv va qo’riqlash, yong’inga qarshi infratuzilma, birinchi tibbiy yordam punktlari"
+    }
+  ]
+}

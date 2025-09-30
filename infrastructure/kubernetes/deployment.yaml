@@ -1,0 +1,312 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uzbek-whisper-asr
+  namespace: uzbek-whisper
+  labels:
+    app: uzbek-whisper-asr
+    version: v1.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: uzbek-whisper-asr
+  template:
+    metadata:
+      labels:
+        app: uzbek-whisper-asr
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: uzbek-whisper-service-account
+      containers:
+      - name: asr-service
+        image: uzbek-whisper:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "8Gi"
+            cpu: "4"
+            nvidia.com/gpu: "1"
+        env:
+        - name: MODEL_PATH
+          value: "/models/whisper_uzbek_multilingual.pt"
+        - name: PROCESSOR_PATH
+          value: "/models/processor"
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: WORKERS
+          value: "1"
+        - name: MAX_FILE_SIZE
+          value: "52428800"  # 50MB
+        - name: MAX_BATCH_SIZE
+          value: "10"
+        - name: CACHE_TTL
+          value: "3600"
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: PROMETHEUS_PORT
+          value: "9090"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /models
+          readOnly: true
+        - name: tmp-storage
+          mountPath: /tmp
+        - name: config-volume
+          mountPath: /app/configs
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 12  # Allow 2 minutes for startup
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-pvc
+      - name: tmp-storage
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: config-volume
+        configMap:
+          name: uzbek-whisper-config
+      nodeSelector:
+        node-type: gpu-node
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - uzbek-whisper-asr
+              topologyKey: kubernetes.io/hostname
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uzbek-whisper-service
+  namespace: uzbek-whisper
+  labels:
+    app: uzbek-whisper-asr
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app: uzbek-whisper-asr
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: uzbek-whisper-service-account
+  namespace: uzbek-whisper
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uzbek-whisper-config
+  namespace: uzbek-whisper
+data:
+  config.yaml: |
+    model:
+      path: "/models/whisper_uzbek_multilingual.pt"
+      processor_path: "/models/processor"
+      device: "cuda"
+      languages: ["uz", "ru", "mixed"]
+
+    serving:
+      host: "0.0.0.0"
+      port: 8000
+      workers: 1
+      max_file_size: 52428800  # 50MB
+      max_batch_size: 10
+      request_timeout: 30
+
+    cache:
+      enabled: true
+      host: "redis-service"
+      port: 6379
+      ttl: 3600
+      max_connections: 100
+
+    monitoring:
+      enabled: true
+      port: 9090
+      log_level: "INFO"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-pvc
+  namespace: uzbek-whisper
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: uzbek-whisper-hpa
+  namespace: uzbek-whisper
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: uzbek-whisper-asr
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: pending_requests
+      target:
+        type: AverageValue
+        averageValue: "30"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: uzbek-whisper-pdb
+  namespace: uzbek-whisper
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: uzbek-whisper-asr
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: uzbek-whisper-ingress
+  namespace: uzbek-whisper
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - asr.example.com
+    secretName: uzbek-whisper-tls
+  rules:
+  - host: asr.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: uzbek-whisper-service
+            port:
+              number: 80

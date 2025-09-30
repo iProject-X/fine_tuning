@@ -1,0 +1,156 @@
+{
+  "dataset_info": {
+    "name": "Uzbek Speech Samples",
+    "language": "uz",
+    "mixed_language": true,
+    "total_samples": 18,
+    "uzbek_only": 10,
+    "mixed_language_samples": 8
+  },
+  "samples": [
+    {
+      "id": "uzbek_01",
+      "audio_file": "uzbek_01.wav",
+      "text_file": "uzbek_01.txt",
+      "transcription": "Assalomu alaykum, qalaysiz?",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_02",
+      "audio_file": "uzbek_02.wav",
+      "text_file": "uzbek_02.txt",
+      "transcription": "Men O'zbekistondan kelganman",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_03",
+      "audio_file": "uzbek_03.wav",
+      "text_file": "uzbek_03.txt",
+      "transcription": "Bugun ob-havo juda yaxshi",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_04",
+      "audio_file": "uzbek_04.wav",
+      "text_file": "uzbek_04.txt",
+      "transcription": "Biz birga ishlashimiz kerak",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_05",
+      "audio_file": "uzbek_05.wav",
+      "text_file": "uzbek_05.txt",
+      "transcription": "Men uzbek tilida gaplashishni yaxshi ko'raman",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_06",
+      "audio_file": "uzbek_06.wav",
+      "text_file": "uzbek_06.txt",
+      "transcription": "Toshkent shahrida ko'p odamlar yashaydi",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_07",
+      "audio_file": "uzbek_07.wav",
+      "text_file": "uzbek_07.txt",
+      "transcription": "O'qish juda muhim va foydali",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_08",
+      "audio_file": "uzbek_08.wav",
+      "text_file": "uzbek_08.txt",
+      "transcription": "Kelajakda men dasturchi bo'lmoqchiman",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_09",
+      "audio_file": "uzbek_09.wav",
+      "text_file": "uzbek_09.txt",
+      "transcription": "Oila bilan birga vaqt o'tkazish yoqimli",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "uzbek_10",
+      "audio_file": "uzbek_10.wav",
+      "text_file": "uzbek_10.txt",
+      "transcription": "Teknologiya hayotimizni osonlashtiradi",
+      "language": "uz",
+      "type": "monolingual"
+    },
+    {
+      "id": "mixed_01",
+      "audio_file": "mixed_01.wav",
+      "text_file": "mixed_01.txt",
+      "transcription": "Men bugun рынок ga boraman",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_02",
+      "audio_file": "mixed_02.wav",
+      "text_file": "mixed_02.txt",
+      "transcription": "Привет, qalaysiz qarindosh?",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_03",
+      "audio_file": "mixed_03.wav",
+      "text_file": "mixed_03.txt",
+      "transcription": "Siz компьютер bilan ishlaysizmi?",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_04",
+      "audio_file": "mixed_04.wav",
+      "text_file": "mixed_04.txt",
+      "transcription": "Bu программа juda zo'r",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_05",
+      "audio_file": "mixed_05.wav",
+      "text_file": "mixed_05.txt",
+      "transcription": "Давайте birga ishlaylik",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_06",
+      "audio_file": "mixed_06.wav",
+      "text_file": "mixed_06.txt",
+      "transcription": "Интернет orqali aloqa qilamiz",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_07",
+      "audio_file": "mixed_07.wav",
+      "text_file": "mixed_07.txt",
+      "transcription": "Машина uchun бензин kerak",
+      "language": "uz-ru",
+      "type": "code_switching"
+    },
+    {
+      "id": "mixed_08",
+      "audio_file": "mixed_08.wav",
+      "text_file": "mixed_08.txt",
+      "transcription": "Университет da o'qiyapman",
+      "language": "uz-ru",
+      "type": "code_switching"
+    }
+  ]
+}

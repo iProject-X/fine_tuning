@@ -1,0 +1,57 @@
+{
+  "total_samples": 11,
+  "quality_stats": {
+    "mean": 0.6257421306588433,
+    "median": 0.6193872541189194,
+    "min": 0.3454906865954399,
+    "max": 1.0,
+    "std": 0.17491000384885616
+  },
+  "duration_stats": {
+    "mean": 3.4545454545454546,
+    "median": 3.0,
+    "min": 2.0,
+    "max": 8.0,
+    "total_hours": 0.010555555555555556
+  },
+  "quality_distribution": {
+    "Среднее": 5,
+    "Хорошее": 5,
+    "Отличное": 1,
+    "Низкое": 0
+  },
+  "language_distribution": {
+    "uz": 11
+  },
+  "best_samples": [
+    {
+      "transcription": "No aniqlikdan aniqlikga olib chiqamiz",
+      "quality_score": 1.0,
+      "duration": 3.0
+    },
+    {
+      "transcription": "Zamonaviy bozor va oilaviy ko’ngil ochar majmuasi",
+      "quality_score": 0.7539229840040207,
+      "duration": 4.0
+    },
+    {
+      "transcription": "Bozor, Do’stlik bog’i, Mehmonxona, Do’konlar",
+      "quality_score": 0.7328177243471146,
+      "duration": 4.0
+    },
+    {
+      "transcription": "Kadastor xujjatlariga ega do’konlar",
+      "quality_score": 0.6913554668426514,
+      "duration": 3.0
+    },
+    {
+      "transcription": "Hadid Doktor eng zo’r kompaniya",
+      "quality_score": 0.6539185345172882,
+      "duration": 2.0
+    }
+  ],
+  "recommendations": [
+    "Продолжите сбор данных",
+    "Улучшите качество записи"
+  ]
+}
